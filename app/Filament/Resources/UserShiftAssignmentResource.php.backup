@@ -1,0 +1,94 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\UserShiftAssignmentResource\Pages;
+use App\Filament\Resources\UserShiftAssignmentResource\RelationManagers;
+use App\Models\UserShiftAssignment;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+class UserShiftAssignmentResource extends Resource
+{
+    protected static ?string $model = UserShiftAssignment::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Select::make('user_id')
+                    ->relationship('user', 'id')
+                    ->required(),
+                Forms\Components\Select::make('shift_id')
+                    ->relationship('shift', 'name')
+                    ->required(),
+                Forms\Components\DatePicker::make('effective_from')
+                    ->required(),
+                Forms\Components\DatePicker::make('effective_until'),
+                Forms\Components\TextInput::make('assigned_by')
+                    ->numeric(),
+                Forms\Components\Textarea::make('notes')
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('user.id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('shift.name')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('effective_from')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('effective_until')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('assigned_by')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListUserShiftAssignments::route('/'),
+            'create' => Pages\CreateUserShiftAssignment::route('/create'),
+            'edit' => Pages\EditUserShiftAssignment::route('/{record}/edit'),
+        ];
+    }
+}
